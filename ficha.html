@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4f7fc">
+<meta name="robots" content="noindex">
+<title>Ficha del equipo · KAN</title>
+<link rel="icon" href="img/icono-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap">
+<style>
+:root{--navy:#0a2a66;--azul:#087bff;--azul2:#0a52d6;--cian:#24c8ff;--tinta:#0d1b33;--mut:#4a5b78;--linea:#e1e8f3;--fondo:#f4f7fc}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fondo);color:var(--tinta);font:15px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2{font-family:Sora,Inter,sans-serif;letter-spacing:-.03em;margin:0}
+.caja{max-width:1100px;margin:0 auto;padding:16px 16px 110px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0 14px}
+header img{height:42px;width:auto}
+.disp{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;padding:6px 12px;border-radius:999px}
+.disp::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.d-DISPONIBLE{color:#0f7a52;background:#e3f7ee}.d-APARTADO{color:#8a5a00;background:#fff3d6}.d-NO_DISPONIBLE{color:#8a1f33;background:#fde6ea}
+.rejilla{display:grid;gap:22px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:1024px){.rejilla{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:start}.galeria{position:sticky;top:16px}.caja{padding:24px 24px 60px}}
+.principal{position:relative;height:clamp(280px,70vw,520px);border-radius:26px;overflow:hidden;background:radial-gradient(circle at 50% 55%,rgba(36,200,255,.3),transparent 60%),linear-gradient(150deg,#0c2a5c,#06152f);display:grid;place-items:center}
+.principal img{width:100%;height:100%;object-fit:contain;animation:entra .5s ease both}
+.principal button{position:absolute;top:calc(50% - 22px);width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.88);display:grid;place-items:center;cursor:pointer;font-size:20px;color:var(--tinta)}
+.principal .ant{left:12px}.principal .sig{right:12px}
+.miniaturas{display:flex;gap:8px;margin-top:10px;overflow-x:auto}
+.miniaturas button{flex:none;width:68px;height:68px;padding:0;border-radius:12px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:#dfe7f3}
+.miniaturas button.on{border-color:var(--azul)}
+.miniaturas img{width:100%;height:100%;object-fit:cover}
+.sin-foto{color:#9fc3f0;text-align:center;font-size:13px}
+.ceja{font-size:12px;font-weight:800;letter-spacing:.1em;color:var(--azul2);text-transform:uppercase}
+h1{font-size:clamp(26px,4vw,36px);margin-top:4px}
+.precio{display:flex;align-items:baseline;gap:8px;margin:12px 0 4px}
+.precio b{font-family:Sora,Inter,sans-serif;font-size:34px;color:var(--navy);letter-spacing:-.03em}
+.campos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}
+.campo{background:#fff;border:1px solid var(--linea);border-radius:16px;padding:12px 14px}
+.campo span{display:block;font-size:12px;color:var(--mut)}
+.campo b{font-size:15px}
+.detalles{background:#fff;border:1px solid var(--linea);border-radius:16px;padding:14px;color:#22324f}
+.aviso{margin:16px 0;padding:12px 14px;border-radius:14px;background:#eef4ff;border:1px solid #cfe0ff;color:#23406f;font-size:13px}
+.vendedor{display:flex;align-items:center;gap:12px;margin-top:16px;padding:12px 14px;border-radius:18px;background:linear-gradient(135deg,#0a2a66,#06152f);color:#f4f8ff;overflow:hidden}
+.vendedor img{height:62px;width:auto;margin-bottom:-14px}
+.cta{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:rgba(244,247,252,.96);border-top:1px solid var(--linea)}
+@media (min-width:1024px){.cta{position:static;padding:0;margin-top:18px;background:none;border:0}}
+.cta a{display:flex;align-items:center;justify-content:center;gap:10px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--azul),var(--azul2));color:#fff;font-weight:700;font-size:16px;text-decoration:none;box-shadow:0 10px 24px rgba(8,82,214,.3);transition:transform .18s,box-shadow .2s}
+.cta a:hover{transform:translateY(-2px);box-shadow:0 0 0 1px rgba(36,200,255,.8),0 0 24px rgba(36,200,255,.4)}
+.cta a:focus-visible,button:focus-visible{outline:3px solid var(--azul);outline-offset:3px}
+.estado{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;padding:60px 16px}
+.estado img{width:150px;animation:flota 5s ease-in-out infinite}
+.prueba{font-size:12px;text-align:center;color:#8a5a00;background:#fff3d6;border-radius:10px;padding:6px 10px;margin-bottom:10px}
+.entra{animation:entra .55s cubic-bezier(.2,.8,.2,1) both}
+@keyframes entra{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes flota{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="caja" id="ficha"><div class="estado"><img src="img/m_lap.webp" alt=""><span>Cargando ficha…</span></div></div>
+<script src="js/config.js"></script>
+<script>if (!window.KAN_CONFIG.API_URL) document.write('<script src="js/servidor-prueba.js"><\/script>');</script>
+<script src="js/api.js"></script>
+<script>
+(function () {
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  var caja = document.getElementById('ficha');
+  var f = new URLSearchParams(location.search).get('f') || '';
+  var MENSAJES = { NO_EXISTE: 'Esta ficha no existe o el enlace está incompleto.', REVOCADA: 'Esta ficha ya no está disponible.', VENCIDA: 'Este enlace venció. Pide uno nuevo a tu vendedor.' };
+  function estado(img, titulo, texto) { caja.innerHTML = '<div class="estado entra"><img src="img/' + img + '" alt=""><h2>' + esc(titulo) + '</h2><p style="color:var(--mut);margin:0">' + esc(texto) + '</p></div>'; }
+  KANApi.llamar('fichaPublica', { f: f }).then(function (r) {
+    if (r.estado !== 'OK') return estado('m_think.webp', 'Ficha no disponible', MENSAJES[r.estado] || MENSAJES.NO_EXISTE);
+    var u = r.unidad, i = 0;
+    document.title = u.nombre + ' · KAN';
+    var wa = r.vendedor.whatsapp ? 'https://wa.me/' + r.vendedor.whatsapp + '?text=' + encodeURIComponent('Hola, me interesa el ' + u.nombre + ' (ref. ' + u.referencia + '). ¿Sigue disponible?') : '';
+    var DISP = { DISPONIBLE: 'Disponible', APARTADO: 'Apartado', NO_DISPONIBLE: 'No disponible' };
+    function galeria() {
+      if (!u.fotos.length) return '<div class="principal"><div class="sin-foto">Sin fotografías por ahora.<br>Pídelas a tu vendedor.</div></div>';
+      return '<div class="principal"><img src="' + u.fotos[i] + '" alt="' + esc(u.nombre) + ', foto ' + (i + 1) + '">' + (u.fotos.length > 1 ? '<button class="ant" data-m="-1" aria-label="Foto anterior">‹</button><button class="sig" data-m="1" aria-label="Foto siguiente">›</button>' : '') + '</div>' +
+        (u.fotos.length > 1 ? '<div class="miniaturas">' + u.fotos.map(function (s, j) { return '<button class="' + (j === i ? 'on' : '') + '" data-i="' + j + '" aria-label="Foto ' + (j + 1) + '"><img src="' + s + '" alt=""></button>'; }).join('') + '</div>' : '');
+    }
+    function pintar() {
+      caja.innerHTML = (KANApi.modoPrueba ? '<div class="prueba">Ficha de prueba con datos ficticios</div>' : '') +
+        '<header><img src="img/logo.png" alt="KAN"><span class="disp d-' + u.disponibilidad + '">' + DISP[u.disponibilidad] + '</span></header>' +
+        '<div class="rejilla"><section class="galeria entra" id="galeria">' + galeria() + '</section><section class="entra" style="animation-delay:.08s">' +
+        '<div class="ceja">' + esc(u.marca) + ' · ' + esc(u.categoria) + '</div><h1>' + esc(u.nombre) + '</h1>' +
+        (u.precio !== null ? '<div class="precio"><b>$' + Number(u.precio).toLocaleString('es-MX') + '</b><span style="color:var(--mut);font-weight:600">MXN</span></div>' : '<p style="color:var(--mut)">Este equipo ya no está disponible. Pregunta a tu vendedor por opciones similares.</p>') +
+        '<div class="campos">' + u.campos.map(function (c) { return '<div class="campo"><span>' + esc(c.l) + '</span><b>' + esc(c.v) + '</b></div>'; }).join('') + '</div>' +
+        (u.detalles ? '<div class="detalles"><div style="font-size:12px;color:var(--mut)">Detalles</div>' + esc(u.detalles) + '</div>' : '') +
+        '<div class="aviso">El precio y la existencia deben confirmarse con tu vendedor antes de cerrar la compra. Referencia: <b>' + esc(u.referencia) + '</b></div>' +
+        '<div class="vendedor"><img src="img/m_lentes.webp" alt=""><div><div style="font-size:12px;color:#a9d8ff">Te atiende</div><b style="font-family:Sora,Inter,sans-serif">' + esc(r.vendedor.nombre) + ' · KAN</b></div></div>' +
+        (wa ? '<div class="cta"><a href="' + esc(wa) + '" target="_blank" rel="noopener"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8.5 8.5 0 01-12.6 7.4L3 21l1.7-5.2A8.5 8.5 0 1121 12z"/></svg>Preguntar por WhatsApp</a></div>' : '') +
+        '</section></div>';
+    }
+    caja.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-m],[data-i]'); if (!b) return;
+      i = b.dataset.i !== undefined ? Number(b.dataset.i) : (i + Number(b.dataset.m) + u.fotos.length) % u.fotos.length;
+      document.getElementById('galeria').innerHTML = galeria();
+    });
+    pintar();
+  }).catch(function (e) { estado('m_alerta.webp', 'No pudimos abrir la ficha', e.message || 'Revisa tu conexión e inténtalo de nuevo.'); });
+})();
+</script>
+</body>
+</html>
