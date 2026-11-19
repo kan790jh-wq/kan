@@ -425,6 +425,10 @@ details.plegable[open]>summary{margin-bottom:10px}
 .btn.wa:hover{box-shadow:0 10px 26px rgba(37,211,102,.35)}
 .btn.grande{min-height:54px;font-size:15.5px;width:100%;justify-content:center}
 
+.aviso-previa{flex-wrap:wrap;align-items:center}
+.aviso-previa>span{flex:1 1 220px}
+.aviso-previa .btn{flex:none}
+
 /* Mascota con más vida */
 .m-flota{animation:flotar 4.5s ease-in-out infinite}
 .m-saluda{transform-origin:50% 90%;animation:saludar 2.6s ease-in-out infinite}
