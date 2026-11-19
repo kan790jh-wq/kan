@@ -4,7 +4,7 @@
 (function () {
   var C = window.KAN_CONFIG || {};
   var PRUEBA = !C.API_URL;
-  var CLAVE_DATOS = 'kan_v7_prueba_datos';
+  var CLAVE_DATOS = 'kan_v72_prueba_datos';
   var CLAVE_SESION = 'kan_v7_sesion';
   var servidor = null;
 
@@ -17,7 +17,7 @@
       catch (e) { console.warn('KAN prueba: el navegador no tiene espacio para guardar todo (las fotos de prueba se perderán al recargar).'); }
     };
     servidor = window.KANServidorPrueba(estado, guardar, {
-      GOOGLE_CLIENT_ID: 'KAN-PRUEBA', URL_APP: location.href.replace(/[^/]*([?#].*)?$/, ''), ADMIN_EMAIL: 'admin@prueba.kan', PROVEEDORES_INICIALES: []
+      GOOGLE_CLIENT_ID: 'KAN-PRUEBA', URL_APP: location.origin + location.pathname.replace(/[^/]*$/, ''), ADMIN_EMAIL: 'admin@prueba.kan', PROVEEDORES_INICIALES: []
     });
     if (!estado) { servidor.instalarKAN(); servidor.crearDatosDePrueba(); guardar(servidor.sim.estado); }
     return servidor;
