@@ -68,8 +68,8 @@
       otraCuenta: function () { idTokenPendiente = null; V.acceso(); }
     };
     raiz.innerHTML = '<section class="acceso"><img class="marca-agua" src="img/mark_dark.png" alt="">' +
-      '<div class="hero entra"><div class="ceja">KAN · Compra · Vende · Actualiza</div><h1>Tu inventario,<br><span>listo para vender.</span></h1>' +
-      '<p class="mut" style="max-width:520px;margin:0">Proveedores, vendedores y administración en una sola plataforma. Cada quien ve solo lo que le corresponde.</p>' +
+      '<div class="hero entra"><div class="ceja">KAN Distribuidora · Compra · Vende · Actualiza</div><h1>Tu inventario,<br><span>listo para vender.</span></h1>' +
+      '<p class="mut" style="max-width:520px;margin:0">Proveedores, vendedores y clientes en una sola plataforma de distribución. Cada quien ve solo lo que le corresponde.</p>' + K.avisoDistribuidora() + '' +
       '<div class="orbita-caja"><div class="orbita" style="width:270px;height:270px"><i></i></div><div class="orbita b" style="width:205px;height:205px"><i></i></div><img src="img/m_pulgar.webp" alt="Mascota de KAN"></div></div>' +
       '<div class="panel-acceso entra" style="animation-delay:.15s"><div class="entre" style="margin-bottom:14px"><img src="img/logo_dark.png" alt="KAN" style="height:54px;width:auto"><span class="etiqueta cian">V7.1</span></div><div id="panel-acceso"></div></div></section>';
     if (modo && modo.html) { pintarPanel(modo.html); return; }
@@ -130,6 +130,8 @@
     K.refrescar = function () { V.admin(ruta, v); };
     K.accionesVista = Object.assign({}, accionesSolicitudes(function () { V.admin(ruta, v); }), accionesCodigo(function () { V.admin(ruta, v); }), {
       tab: function (el) { K.ir('/admin?tab=' + el.dataset.tab); },
+      ajustesT: function (el) { K.ajustesTienda(el.dataset.t, function () { V.admin(ruta, v); }); },
+      copiarVitrina: function (el) { K.copiar(el.dataset.url, 'Enlace de la vitrina copiado'); },
       delegar: function (el) {
         var on = el.dataset.v === 'true';
         api.llamar('delegarTienda', { tiendaId: el.dataset.t, activo: on }).then(function () { K.toast(on ? 'Ahora ese proveedor aprueba a sus vendedores' : 'Tú vuelves a aprobar a los vendedores de esa tienda'); K.refrescar(); }).catch(K.error);
@@ -220,7 +222,7 @@
     }).join('') + '<div class="kpi"><b style="color:var(--sold)" data-contar="' + r.vendidas30 + '">0</b><span>Vendidas (30 días)</span></div><div class="kpi"><b data-contar="' + r.solicitudesPendientes + '">0</b><span>Solicitudes</span></div></div>' +
       '<div class="tarjeta plana entra" style="margin:16px 0;animation-delay:.1s">' + K.mascota(viejas.length || r.solicitudesPendientes ? 'inteligencia' : 'confianza', globo) +
       (r.solicitudesPendientes ? '<div style="margin-top:12px"><button class="btn p chico" data-act="tab" data-tab="solicitudes">Revisar solicitudes</button></div>' : '') + '</div>' +
-      '<div class="entre" style="margin:20px 0 10px"><h2>Tiendas</h2><span class="mut peq">' + r.usuarios.proveedores + ' proveedores · ' + r.usuarios.vendedores + ' vendedores' + (r.usuarios.suspendidos ? ' · ' + r.usuarios.suspendidos + ' suspendidos' : '') + '</span></div>' +
+      '<div class="entre" style="margin:20px 0 10px"><h2>Tiendas</h2><span class="mut peq">' + r.usuarios.proveedores + ' proveedores · ' + r.usuarios.vendedores + ' vendedores · ' + (r.usuarios.clientes || 0) + ' clientes' + (r.usuarios.suspendidos ? ' · ' + r.usuarios.suspendidos + ' suspendidos' : '') + '</span></div>' +
       '<div class="tabla-caja entra" style="animation-delay:.15s"><table class="t"><thead><tr><th>Tienda</th><th>Estado</th><th class="num">Disponibles</th><th class="num">Unidades</th><th class="num">Vendedores</th><th>Inventario confirmado</th></tr></thead><tbody>' +
       r.tiendas.map(function (t) {
         var vieja = !t.ultimaConfirmacion || Date.now() - t.ultimaConfirmacion > 7 * 864e5;
@@ -274,10 +276,13 @@
   }
   function adminUsuarios(us, r) {
     var tiendas = {}; r.tiendas.forEach(function (t) { tiendas[t.id] = t.nombre; });
-    var ROL = { ADMIN: 'Administrador', PROVEEDOR: 'Proveedor', VENDEDOR: 'Vendedor' };
+    var ROL = { ADMIN: 'Administrador', PROVEEDOR: 'Proveedor', VENDEDOR: 'Vendedor', CLIENTE: 'Cliente' };
     return '<div class="entre" style="margin-bottom:12px"><h2 style="margin:0">Tiendas</h2><button class="btn chico" data-act="crearTienda">' + ic('mas') + 'Nueva tienda</button></div>' +
       '<div class="tabla-caja entra" style="margin-bottom:22px"><table class="t"><thead><tr><th>Tienda</th><th>Código para vendedores</th><th>¿Quién aprueba vendedores?</th></tr></thead><tbody>' + r.tiendas.map(function (t) {
-        return '<tr><td><b>' + esc(t.nombre) + '</b><br><span class="mini mut">' + esc(t.proveedor || '') + (t.estado !== 'ACTIVO' ? ' · suspendida' : '') + '</span></td><td style="white-space:normal">' + bloqueCodigo(t, r.config.codigos) + '</td>' +
+        return '<tr><td><div class="fila con-logo" style="flex-wrap:nowrap;gap:10px">' + K.logoTienda(t.id, t.logo, t.nombre, 'sm') + '<div><b>' + esc(t.nombre) + '</b><br><span class="mini mut">' + esc(t.proveedor || '') + (t.estado !== 'ACTIVO' ? ' · suspendida' : '') + '</span>' +
+          '<div class="fila" style="gap:6px;margin-top:6px"><button class="btn chico" data-act="ajustesT" data-t="' + esc(t.id) + '">' + ic('editar') + 'Logo y vitrina</button>' +
+          (t.enlaceClientes ? '<button class="btn fant chico" data-act="copiarVitrina" data-url="' + esc(t.enlaceClientes) + '" title="Copiar enlace de clientes">' + ic('enlace') + '</button>' : '') +
+          '<span class="etiqueta ' + (t.clientesActivo ? 'cian' : 'aviso') + '">' + (t.clientesActivo ? t.clientes + ' cliente' + (t.clientes === 1 ? '' : 's') : 'Vitrina cerrada') + '</span></div></div></div></td><td style="white-space:normal">' + bloqueCodigo(t, r.config.codigos) + '</td>' +
           '<td><div class="chips"><button class="chip-f' + (t.aprobarVendedores ? '' : ' on') + '" data-act="delegar" data-t="' + esc(t.id) + '" data-v="false" aria-pressed="' + !t.aprobarVendedores + '">Yo</button><button class="chip-f' + (t.aprobarVendedores ? ' on' : '') + '" data-act="delegar" data-t="' + esc(t.id) + '" data-v="true" aria-pressed="' + !!t.aprobarVendedores + '">El proveedor</button></div>' +
           (r.config.modoAprobacion === 'DELEGADO' ? '<span class="mini mut">Modo delegado global activo</span>' : '') + '</td></tr>';
       }).join('') + '</tbody></table></div>' +
@@ -358,7 +363,7 @@
   function tarjetaModelo(g, i) {
     var c = g.conteo;
     return '<a class="modelo entra"' + delay(i) + ' href="#/grupo/' + esc(g.id) + '"><div class="foto">' + K.foto(g.portada, g.categoria, 'mini', g.nombre) +
-      '<div class="sobre"><span class="estado e-DISPONIBLE">' + c.DISPONIBLE + ' disp.</span>' + (c.APARTADO ? '<span class="estado e-APARTADO">' + c.APARTADO + ' apart.</span>' : '') + '</div><span class="sobre-der">' + esc(g.tienda) + '</span></div>' +
+      '<div class="sobre"><span class="estado e-DISPONIBLE">' + c.DISPONIBLE + ' disp.</span>' + (c.APARTADO ? '<span class="estado e-APARTADO">' + c.APARTADO + ' apart.</span>' : '') + '</div><span class="sobre-der con-logo">' + K.logoTienda(g.tiendaId, (K.mapaLogos || {})[g.tiendaId], g.tienda, 'xs') + esc(g.tienda) + '</span></div>' +
       '<div class="cuerpo"><div class="t">' + esc(g.nombre) + '</div><div class="mini mut">' + esc(g.detalle || g.categoria) + ' · ' + g.coinciden + ' unidad' + (g.coinciden === 1 ? '' : 'es') + ' en el filtro</div>' +
       '<div class="cuentas">' + (c.REVISION ? '<span style="color:var(--review)">' + c.REVISION + ' en revisión</span>' : '') + (c.VENDIDO ? '<span style="color:var(--sold)">' + c.VENDIDO + ' vendidas</span>' : '') + (c.RETIRADO ? '<span>' + c.RETIRADO + ' retiradas</span>' : '') + '</div>' +
       '<div class="precios">' + (g.desdeProveedor !== undefined ? '<div>Proveedor desde<b>' + K.dinero(g.desdeProveedor) + '</b></div>' : '<div></div>') + '<div class="rec">Recomendado desde<b>' + K.dinero(g.desde) + '</b></div></div></div></a>';
@@ -469,9 +474,12 @@
         var r = datos, us = ordenarLista(r.unidades, ordenTabla);
         var viejas = r.tiendas.filter(function (t) { return t.desactualizado; });
         var tiendaUnica = r.tiendas.length === 1 ? r.tiendas[0] : null;
+        K.mapaLogos = {}; r.tiendas.forEach(function (t) { K.mapaLogos[t.id] = t.logo; });
+        var tiendaFoco = tiendaUnica || (F.tiendaId ? r.tiendas.filter(function (t) { return t.id === F.tiendaId; })[0] : null);
         var capacidades = {}, colores = {};
         r.unidades.forEach(function (u) { if (u.grupo.capacidad) capacidades[u.grupo.capacidad] = 1; if (u.specs.color) colores[u.specs.color] = 1; });
-        var cab = '<div class="encabezado entra"><div><div class="ceja">' + (esInv ? (K.rol() === 'ADMIN' ? 'Todas las tiendas' : 'Mi tienda') : 'Catálogo comercial') + '</div><h1>' + (esInv ? 'Inventario' : F.soloFavoritos ? 'Mis favoritos' : 'Equipos para vender') + '</h1>' +
+        var cab = (tiendaFoco ? K.bannerTienda(tiendaFoco, esInv ? (tiendaFoco.propia ? 'Tu tienda en KAN Distribuidora' : 'Tienda en KAN Distribuidora') : 'Inventario de la tienda') : '') +
+          '<div class="encabezado entra"><div><div class="ceja">' + (esInv ? (K.rol() === 'ADMIN' ? 'Todas las tiendas' : 'Mi tienda') : 'Catálogo comercial') + '</div><h1>' + (esInv ? 'Inventario' : F.soloFavoritos ? 'Mis favoritos' : 'Equipos para vender') + '</h1>' +
           '<p class="mut">' + r.unidades.length + ' unidad' + (r.unidades.length === 1 ? '' : 'es') + ' · ' + r.grupos.length + ' modelo' + (r.grupos.length === 1 ? '' : 's') + (tiendaUnica ? ' · ' + esc(tiendaUnica.nombre) : '') + '</p></div>' +
           '<div class="fila">' + (esInv && K.puede('inventario.crear') ? '<a class="btn p" href="#/registro">' + ic('mas') + 'Registrar equipos</a>' : '') +
           '<button class="btn chico solo-movil" data-act="abrirFiltros" style="min-height:44px">' + ic('filtro') + 'Filtros</button>' +
@@ -588,12 +596,13 @@
         '<div class="sobre">' + K.estado(u.estado) + '</div>' + (u.fotos.length > 1 ? '<span class="sobre-der">Foto ' + (foto + 1) + ' de ' + u.fotos.length + '</span>' : '') + '</div>' +
         (u.fotos.length > 1 ? '<div class="miniaturas">' + u.fotos.map(function (f, i) { return '<button class="' + (i === foto ? 'on' : '') + '" data-act="foto" data-i="' + i + '" aria-label="Foto ' + (i + 1) + '">' + K.foto(f, u.categoria, 'mini') + '</button>'; }).join('') + '</div>' : '') +
         (!u.fotos.length ? '<p class="mini mut" style="margin:8px 2px">Esta unidad todavía no tiene fotos.' + (a.fotos ? ' <a href="#/editar/' + esc(u.id) + '">Agregar fotos</a>' : '') + '</p>' : '') + '</section>' +
-        '<section class="pila entra" style="animation-delay:.08s"><div><div class="fila" style="gap:8px">' + idCopia(u.id) + '<span class="etiqueta">' + esc(u.tienda) + '</span>' + (u.estado === 'APARTADO' ? '<span class="etiqueta aviso">' + (u.apartadoHasta ? 'Apartado · vence ' + K.hace(u.apartadoHasta) : 'Apartado sin vencimiento') + '</span>' : '') + '</div>' +
+        '<section class="pila entra" style="animation-delay:.08s"><div><div class="fila" style="gap:8px">' + idCopia(u.id) + '<span class="etiqueta con-logo">' + K.logoTienda(u.tiendaId, u.tiendaLogo, u.tienda, 'xs') + esc(u.tienda) + '</span>' + (u.estado === 'APARTADO' ? '<span class="etiqueta aviso">' + (u.apartadoHasta ? 'Apartado · vence ' + K.hace(u.apartadoHasta) : 'Apartado sin vencimiento') + '</span>' : '') + '</div>' +
         '<h1 style="margin-top:10px">' + esc(u.nombre) + '</h1><div class="mut">' + esc(u.detalle) + '</div></div>' +
         '<div class="specs">' + campos.map(function (c) { return '<div class="spec"><span>' + esc(c.l) + '</span><b>' + esc(c.v) + '</b></div>'; }).join('') + '</div>' +
         (u.specs.detalles ? '<div class="spec"><span>Detalles</span>' + esc(u.specs.detalles) + '</div>' : '') +
         '<div class="precio-bloque">' + (u.precioProveedor !== undefined ? '<div class="p"><span>Precio del proveedor</span><b>' + K.dinero(u.precioProveedor) + '</b><span>Nunca llega al cliente</span></div>' : '') +
-        '<div class="p dest"><span>Precio recomendado</span><b>' + K.dinero(u.precioRecomendado) + '</b>' + (u.gananciaRecomendada !== undefined ? '<span style="color:var(--ok2)">Ganancia sugerida ' + K.dinero(u.gananciaRecomendada) + '</span>' : '') + '</div></div>' +
+        '<div class="p dest"><span>Precio recomendado</span><b>' + K.dinero(u.precioRecomendado) + '</b>' + (u.gananciaRecomendada !== undefined ? '<span style="color:var(--ok2)">Ganancia sugerida ' + K.dinero(u.gananciaRecomendada) + '</span>' : '') + '</div>' +
+        (u.editable ? '<div class="p"><span>Precio para clientes</span><b>' + K.dinero(u.precioCliente == null ? u.precioRecomendado : u.precioCliente) + '</b><span>' + (u.precioCliente == null ? 'Igual al recomendado' : 'Solo en tu vitrina') + '</span></div>' : '') + '</div>' +
         (u.editable ? '<div class="tarjeta plana privado"><div class="fila peq" style="color:var(--warn);font-weight:700">' + ic('candado') + 'Privado del proveedor</div><div class="specs" style="margin-top:10px"><div class="spec"><span>IMEI</span><b>' + esc(u.imei || '—') + '</b></div><div class="spec"><span>Número de serie</span><b>' + esc(u.serie || '—') + '</b></div></div>' + (u.notas ? '<p class="peq" style="margin:10px 0 0">' + esc(u.notas) + '</p>' : '') + '</div>'
           : '<div class="aviso info peq">' + ic('candado') + 'IMEI, número de serie y notas internas solo los ve el proveedor.</div>') +
         (function () {
@@ -678,7 +687,8 @@
         }).then(function (d) {
           if (!d) return;
           return api.llamar('cambiarEstado', { id: u.id, version: u.version, estado: e, horas: d.horas, nota: d.nota }).then(function () {
-            K.toast(e === 'VENDIDO' ? '¡Venta registrada!' : 'Estado actualizado: ' + K.NOMBRE_ESTADO[e], 'ok', e === 'VENDIDO' ? 'entusiasmo' : 'exito');
+            K.toast(e === 'VENDIDO' ? '¡Venta registrada!' : 'Estado actualizado: ' + K.NOMBRE_ESTADO[e], 'ok', e === 'VENDIDO' ? 'fiesta' : e === 'APARTADO' ? 'caja' : 'exito');
+            if (e === 'VENDIDO' && K.celebrar) K.celebrar();
             if (e === 'VENDIDO') document.body.classList.add('celebra'), setTimeout(function () { document.body.classList.remove('celebra'); }, 1300);
             return cargar();
           });
@@ -803,6 +813,7 @@
             '<div class="form dos-col">' + def.unidad.map(function (c) { return campoHtml(c, x.specs[c.k], 'u' + i + '-', ' data-input="ru" data-change="ru" data-i="' + i + '" data-k="' + c.k + '"'); }).join('') +
             '<label class="campo">Precio del proveedor (MXN) <em>*</em><input type="number" inputmode="numeric" min="0" data-input="ruP" data-i="' + i + '" data-k="precioProveedor" value="' + esc(x.precioProveedor) + '"></label>' +
             '<label class="campo">Precio recomendado (MXN) <em>*</em><input type="number" inputmode="numeric" min="0" data-input="ruP" data-i="' + i + '" data-k="precioRecomendado" value="' + esc(x.precioRecomendado) + '"></label>' +
+            '<label class="campo">Precio para clientes de la tienda (MXN)<input type="number" inputmode="numeric" min="0" data-input="ruP" data-i="' + i + '" data-k="precioCliente" value="' + esc(x.precioCliente || '') + '" placeholder="Vacío = igual al recomendado"></label>' +
             '<details class="plegable todo"><summary class="peq">' + ic('candado') + ' Datos privados: IMEI, serie y notas (opcional)</summary><div class="form dos-col">' +
             '<label class="campo">IMEI<input inputmode="numeric" maxlength="17" data-input="ruP" data-i="' + i + '" data-k="imei" value="' + esc(x.imei) + '"></label><label class="campo">Número de serie<input maxlength="40" data-input="ruP" data-i="' + i + '" data-k="serie" value="' + esc(x.serie) + '"></label>' +
             '<label class="campo todo">Notas internas<textarea maxlength="500" data-input="ruP" data-i="' + i + '" data-k="notas">' + esc(x.notas) + '</textarea></label></div></details>' +
@@ -859,7 +870,7 @@
       });
       if (faltan.length) { K.toast('Falta: ' + faltan.slice(0, 4).join(', ') + (faltan.length > 4 ? '…' : ''), 'err'); return; }
       el.disabled = true;
-      var datos = { tiendaId: R.tiendaId, categoria: R.categoria, marca: R.marca, modelo: R.modelo, grupo: R.grupo, unidades: R.unidades.map(function (x) { return { specs: x.specs, precioProveedor: x.precioProveedor, precioRecomendado: x.precioRecomendado, imei: x.imei, serie: x.serie, notas: x.notas }; }) };
+      var datos = { tiendaId: R.tiendaId, categoria: R.categoria, marca: R.marca, modelo: R.modelo, grupo: R.grupo, unidades: R.unidades.map(function (x) { return { specs: x.specs, precioProveedor: x.precioProveedor, precioRecomendado: x.precioRecomendado, precioCliente: x.precioCliente || '', imei: x.imei, serie: x.serie, notas: x.notas }; }) };
       var totalFotos = R.unidades.reduce(function (a, x) { return a + x.fotos.length; }, 0), hechas = 0, fallas = [];
       v.innerHTML = '<div class="vacio">' + K.mascota('trabajo', 'Registrando ' + R.unidades.length + ' unidad' + (R.unidades.length > 1 ? 'es' : '') + '…', 'vertical') + '<p class="mut" id="progreso"></p></div>';
       api.llamar('registrarLote', datos).then(function (r) {
@@ -878,7 +889,8 @@
     }
     function exito(r, fallas) {
       K.sonido('exito');
-      v.innerHTML = '<div class="vacio celebra">' + K.mascota('entusiasmo', '<b>¡Listo!</b> Registraste ' + r.unidades.length + ' unidad' + (r.unidades.length > 1 ? 'es' : '') + ' de ' + esc(R.marca + ' ' + R.modelo) + '.', 'vertical') +
+      if (K.celebrar) setTimeout(K.celebrar, 150);
+      v.innerHTML = '<div class="vacio celebra">' + K.mascota('fiesta', '<b>¡Listo!</b> Registraste ' + r.unidades.length + ' unidad' + (r.unidades.length > 1 ? 'es' : '') + ' de ' + esc(R.marca + ' ' + R.modelo) + '.', 'vertical') +
         '<div class="fila" style="justify-content:center">' + r.unidades.map(function (id) { return idCopia(id); }).join('') + '</div>' +
         (fallas.length ? '<div class="aviso peligro">' + ic('camara') + 'Algunas fotos no se subieron (' + Array.from(new Set(fallas)).join(', ') + '). Puedes agregarlas desde «Editar».</div>' : '') +
         '<div class="fila" style="justify-content:center;margin-top:8px"><a class="btn p" href="#/registro?grupo=' + esc(r.grupoId) + '&desde=' + esc(r.unidades[r.unidades.length - 1]) + '">' + ic('mas') + 'Agregar otra unidad igual</a><a class="btn" href="#/grupo/' + esc(r.grupoId) + '">Ver modelo y unidades</a><button class="btn fant" data-act="otroRegistro">Registrar otro modelo</button></div></div>';
@@ -912,6 +924,7 @@
         '<form class="tarjeta" data-form="editar" data-input="eSucio"><div class="form dos-col">' + def.unidad.map(function (c) { return campoHtml(c, u.specs[c.k], 'e-'); }).join('') +
         '<label class="campo">Precio del proveedor (MXN) <em>*</em><input type="number" inputmode="numeric" min="0" id="e-precioProveedor" value="' + esc(u.precioProveedor) + '"></label>' +
         '<label class="campo">Precio recomendado (MXN) <em>*</em><input type="number" inputmode="numeric" min="0" id="e-precioRecomendado" value="' + esc(u.precioRecomendado) + '"></label>' +
+        '<label class="campo">Precio para clientes de la tienda (MXN)<input type="number" inputmode="numeric" min="0" id="e-precioCliente" value="' + esc(u.precioCliente == null ? '' : u.precioCliente) + '" placeholder="Vacío = igual al recomendado"><small class="mini mut">Lo ven solo los clientes en tu vitrina. Los vendedores no lo ven.</small></label>' +
         '<label class="campo">IMEI (privado)<input id="e-imei" inputmode="numeric" maxlength="17" value="' + esc(u.imei) + '"></label><label class="campo">Número de serie (privado)<input id="e-serie" maxlength="40" value="' + esc(u.serie) + '"></label>' +
         '<label class="campo todo">Notas internas (privadas)<textarea id="e-notas" maxlength="500">' + esc(u.notas) + '</textarea></label></div>' +
         '<div class="fila" style="margin-top:16px;justify-content:flex-end"><a class="btn fant" href="#/unidad/' + esc(u.id) + '">Cancelar</a><button class="btn p" type="submit">' + ic('check') + 'Guardar cambios</button></div></form>' +
@@ -934,7 +947,7 @@
       'form:editar': function (f) {
         var def = S.meta.categorias[u.categoria], specs = {};
         def.unidad.forEach(function (c) { var e = $('#e-' + c.k); if (e && e.value !== '') specs[c.k] = e.value; });
-        api.llamar('editarUnidad', { id: u.id, version: u.version, specs: specs, precioProveedor: $('#e-precioProveedor').value, precioRecomendado: $('#e-precioRecomendado').value, imei: $('#e-imei').value, serie: $('#e-serie').value, notas: $('#e-notas').value })
+        api.llamar('editarUnidad', { id: u.id, version: u.version, specs: specs, precioProveedor: $('#e-precioProveedor').value, precioRecomendado: $('#e-precioRecomendado').value, precioCliente: $('#e-precioCliente').value, imei: $('#e-imei').value, serie: $('#e-serie').value, notas: $('#e-notas').value })
           .then(function (r) { K.sucio = false; K.toast(r.sinCambios ? 'No había cambios' : 'Cambios guardados'); K.ir('/unidad/' + u.id); })
           .catch(function (e) { K.error(e); if (e.codigo === 'CONFLICTO') cargar(); });
       },
@@ -988,8 +1001,11 @@
 
   V.perfil = function (ruta, v) {
     var p = S.perfil;
-    var ROL = { ADMIN: 'Administrador general', PROVEEDOR: 'Proveedor', VENDEDOR: 'Vendedor' };
+    var ROL = { ADMIN: 'Administrador general', PROVEEDOR: 'Proveedor', VENDEDOR: 'Vendedor', CLIENTE: 'Cliente' };
+    var mias = (p.tiendas || []).filter(function (t) { return t.propia; });
     K.accionesVista = {
+      ajustesMia: function (el) { K.ajustesTienda(el.dataset.t, function () { V.perfil(ruta, v); }); },
+      copiarVitrina: function (el) { K.copiar(el.dataset.url, 'Enlace de tu vitrina copiado. Compártelo con tus clientes.'); },
       'form:perfil': function (f) {
         api.llamar('actualizarPerfil', { nombre: $('#pf-nombre').value, telefono: $('#pf-tel').value }).then(function (r) { S.perfil = r; K.toast('Perfil guardado'); V.perfil(ruta, v); }).catch(K.error);
       },
@@ -1004,7 +1020,12 @@
         K.confirmar('¿Reiniciar los datos de prueba?', 'Se borran los cambios hechos en este navegador.', { si: 'Reiniciar', peligro: true }).then(function (si) { if (si) { api.reiniciarPrueba(); S.perfil = null; location.hash = ''; K.mostrar(); } });
       }
     };
-    v.innerHTML = '<div class="encabezado entra"><div><div class="ceja">' + ROL[p.rol] + '</div><h1>' + esc(p.nombre) + '</h1><p class="mut">' + esc(p.email) + '</p></div>' + K.mascota('confianza', '', 'solo-escritorio') + '</div>' +
+    v.innerHTML = '<div class="encabezado entra"><div><div class="ceja">' + ROL[p.rol] + '</div><h1>' + esc(p.nombre) + '</h1><p class="mut">' + esc(p.email) + '</p></div>' + K.mascota(p.rol === 'CLIENTE' ? 'saludo' : 'confianza', '', 'solo-escritorio') + '</div>' +
+      mias.map(function (t) {
+        return K.bannerTienda(t, 'Mi tienda en KAN Distribuidora', '<div class="fila bt-acciones"><button class="btn p chico" data-act="ajustesMia" data-t="' + esc(t.id) + '">' + ic('editar') + 'Logo, WhatsApp y vitrina</button>' +
+          (t.enlaceClientes ? '<button class="btn chico" data-act="copiarVitrina" data-url="' + esc(t.enlaceClientes) + '">' + ic('enlace') + 'Copiar enlace de clientes</button><a class="btn fant chico" href="#/tienda?t=' + esc(t.id) + '">' + ic('ojo') + 'Ver vitrina</a>' : '') +
+          '<span class="etiqueta ' + (t.clientesActivo ? 'cian' : 'aviso') + '">Vitrina ' + (t.clientesActivo ? 'abierta' : 'cerrada') + '</span></div>');
+      }).join('') +
       '<div class="dos"><form class="tarjeta entra" data-form="perfil"><h2>Tus datos</h2><div class="form" style="margin-top:12px"><label class="campo">Nombre visible<input id="pf-nombre" maxlength="60" value="' + esc(p.nombre) + '"></label>' +
       '<label class="campo">WhatsApp (con lada)<input id="pf-tel" inputmode="tel" value="' + esc(p.telefono || '') + '" placeholder="5215512345678"></label><p class="mini mut" style="margin:0">' + (K.puede('fichas') ? 'Se muestra en las fichas que compartes para que el cliente te escriba.' : 'Para que KAN pueda contactarte.') + '</p>' +
       '<button class="btn p" type="submit">Guardar</button></div></form>' +
@@ -1013,6 +1034,6 @@
       '<div class="tarjeta"><h2>Experiencia</h2><div class="entre" style="margin-top:10px"><span>Sonidos de confirmación</span><button class="btn chico' + (K.sonidoActivo() ? ' p' : '') + '" data-act="sonido" aria-pressed="' + K.sonidoActivo() + '">' + ic('sonido') + (K.sonidoActivo() ? 'Activados' : 'Desactivados') + '</button></div>' +
       '<p class="mini mut">Las animaciones se reducen automáticamente si tu dispositivo tiene activado «reducir movimiento».</p></div>' +
       (api.modoPrueba ? '<div class="tarjeta"><h2>Modo de prueba</h2><p class="mut peq">Los datos son ficticios y viven solo en este navegador.</p><button class="btn peligro chico" data-act="reiniciarPrueba">Reiniciar datos de prueba</button></div>' : '') +
-      '<button class="btn" data-act="salir">' + ic('salir') + 'Cerrar sesión</button></div></div>';
+      '<button class="btn" data-act="salir">' + ic('salir') + 'Cerrar sesión</button></div></div>' + K.avisoDistribuidora();
   };
 })();
