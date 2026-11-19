@@ -1,7 +1,7 @@
 {
-  "name": "KAN · Compra. Vende. Actualiza.",
+  "name": "KAN Distribuidora",
   "short_name": "KAN",
-  "description": "Inventario y venta de equipos electrónicos para proveedores y vendedores.",
+  "description": "Plataforma de distribución de equipos electrónicos: tiendas, vendedores y clientes.",
   "lang": "es-MX",
   "start_url": "./",
   "scope": "./",
