@@ -1,7 +1,8 @@
 /* KAN V7.0 · Service worker: guarda la "cáscara" de la app para abrirla rápido e instalarla.
    Los datos SIEMPRE se piden al servidor (nunca se guardan inventarios en caché). */
-var VERSION = 'kan-v7.1.0';
-var CASCARA = ['./', 'index.html', 'ficha.html', 'css/kan.css', 'js/config.js', 'js/api.js', 'js/app.js', 'js/vistas.js', 'manifest.webmanifest',
+var VERSION = 'kan-v7.2.0';
+var CASCARA = ['./', 'index.html', 'ficha.html', 'css/kan.css', 'js/config.js', 'js/api.js', 'js/app.js', 'js/vistas.js', 'js/vistas-tienda.js', 'manifest.webmanifest',
+  'img/m2_saludo.webp', 'img/m2_fiesta.webp', 'img/m2_laptop.webp', 'img/m2_lupa.webp', 'img/m2_cool.webp', 'img/m2_dormido.webp', 'img/m2_selfie.webp',
   'img/logo.png', 'img/logo_dark.png', 'img/mark_dark.png', 'img/icono-192.png', 'img/icono-512.png',
   'img/m_pulgar.webp', 'img/m_tablet.webp', 'img/m_lentes.webp', 'img/m_think.webp', 'img/m_lap.webp', 'img/m_alerta.webp', 'img/m_heart.webp', 'img/m_thumb.webp'];
 self.addEventListener('install', function (e) { e.waitUntil(caches.open(VERSION).then(function (c) { return c.addAll(CASCARA); }).then(function () { return self.skipWaiting(); })); });
