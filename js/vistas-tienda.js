@@ -104,7 +104,7 @@
       var t = d.tienda, us = d.unidades, propia = (p.tiendas || []).filter(function (x) { return x.id === t.id; })[0] || {};
       var hola = p.rol === 'CLIENTE' ? '¡Hola, ' + esc(p.nombre.split(' ')[0]) + '! Estos son los equipos disponibles hoy.' : 'Así ven tu vitrina los clientes.';
       var cats = Object.keys(d.categorias);
-      var html = (d.vistaPrevia ? '<div class="aviso info peq entra" style="margin-bottom:14px">' + ic('ojo') + '<span><b>Vista previa.</b> Así ven los clientes la vitrina de ' + esc(t.nombre) + '. Ellos ven el <b>precio para clientes</b>, nunca tu precio de proveedor.</span>' +
+      var html = (d.vistaPrevia ? '<div class="aviso info peq entra aviso-previa" style="margin-bottom:14px">' + ic('ojo') + '<span><b>Vista previa.</b> Así ven los clientes la vitrina de ' + esc(t.nombre) + '. Ellos ven el <b>precio para clientes</b>, nunca tu precio de proveedor.</span>' +
           (propia.enlaceClientes ? '<button class="btn chico" data-act="copiarEnlaceV" data-url="' + esc(propia.enlaceClientes) + '">' + ic('enlace') + 'Copiar enlace</button>' : '') +
           '<button class="btn chico" data-act="ajustesV">' + ic('editar') + 'Logo y vitrina</button></div>' : '') +
         '<section class="vitrina-hero entra">' + K.logoTienda(t.id, t.logo, t.nombre, 'xl') +
