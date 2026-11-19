@@ -325,6 +325,130 @@ details.plegable[open]>summary{margin-bottom:10px}
 .cuenta-prueba:hover{border-color:var(--cyan);box-shadow:0 0 16px rgba(36,200,255,.25);transform:translateY(-1px)}
 .cuenta-prueba .av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:800;background:linear-gradient(135deg,#087bff,#24c8ff);color:#04152f;flex:none}
 
+/* =================== V7.2 · KAN Distribuidora, logos de tienda, vitrina y animaciones =================== */
+.marca-txt{display:flex;flex-direction:column;line-height:1.05;text-align:left}
+.marca-txt small{border:0;padding:0;font-size:8.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--cyan2);margin-top:2px}
+
+/* Logos de tienda */
+.logo-t{display:inline-grid;place-items:center;flex:none;border-radius:50%;background:#fff;overflow:hidden;box-shadow:0 0 0 1px rgba(36,200,255,.35),0 6px 18px rgba(0,0,0,.35)}
+.logo-t img{width:100%;height:100%;object-fit:contain;padding:6%}
+.logo-t.ini{background:linear-gradient(135deg,#087bff,#24c8ff);color:#04152f;font-family:var(--f-titulo);font-weight:800}
+.logo-t.xs{width:20px;height:20px;font-size:8px;box-shadow:0 0 0 1px rgba(255,255,255,.25)}
+.logo-t.sm{width:40px;height:40px;font-size:13px}
+.logo-t.md{width:52px;height:52px;font-size:16px}
+.logo-t.lg{width:76px;height:76px;font-size:24px}
+.logo-t.xl{width:118px;height:118px;font-size:36px}
+.logo-t.cargando-logo{background:linear-gradient(90deg,#dfe8f5 25%,#fff 50%,#dfe8f5 75%);background-size:200% 100%;animation:esq 1.2s linear infinite}
+.logo-t.cargando-logo img:not([src]){visibility:hidden}
+.con-logo{display:inline-flex;align-items:center;gap:6px}
+.banner-tienda{position:relative;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:16px 18px;margin-bottom:16px;border-radius:22px;overflow:hidden;
+  background:linear-gradient(120deg,rgba(8,123,255,.22),rgba(36,200,255,.08) 55%,rgba(11,36,80,.6));border:1px solid rgba(36,200,255,.35)}
+.banner-tienda::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.08) 45%,transparent 60%);transform:translateX(-100%);animation:brillo 5.5s ease-in-out infinite;pointer-events:none}
+.banner-tienda .logo-t{animation:halo 3.2s ease-in-out infinite}
+.banner-tienda h2{margin:2px 0 0;font-size:clamp(20px,3vw,26px)}
+.bt-texto{flex:1;min-width:160px}
+.bt-acciones{flex-basis:100%;gap:8px}
+@keyframes halo{0%,100%{box-shadow:0 0 0 1px rgba(36,200,255,.35),0 0 0 0 rgba(36,200,255,.35)}50%{box-shadow:0 0 0 1px rgba(36,200,255,.6),0 0 0 10px rgba(36,200,255,0)}}
+.logo-editor{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+
+/* Aviso legal de KAN Distribuidora */
+.aviso-legal{display:flex;gap:10px;align-items:flex-start;margin:22px 0 4px;padding:12px 14px;border-radius:14px;border:1px dashed rgba(111,174,255,.28);color:var(--mut2);font-size:12px;line-height:1.5}
+.aviso-legal .i{flex:none;color:var(--cyan2);margin-top:1px}
+.aviso-legal b{color:#cfe0f5}
+
+/* Portada de la vitrina (pública) */
+.vitrina-acceso{position:relative;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:40px 16px 30px;overflow:hidden}
+.va-fondo i{position:absolute;border-radius:50%;filter:blur(60px);opacity:.55;animation:deriva 14s ease-in-out infinite}
+.va-fondo i:nth-child(1){width:380px;height:380px;background:#087bff;top:-90px;left:-80px}
+.va-fondo i:nth-child(2){width:300px;height:300px;background:#24c8ff;bottom:-60px;right:-60px;animation-delay:-5s;opacity:.35}
+.va-fondo i:nth-child(3){width:220px;height:220px;background:#5b3cff;top:40%;left:60%;animation-delay:-9s;opacity:.25}
+@keyframes deriva{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(40px,30px) scale(1.1)}66%{transform:translate(-30px,20px) scale(.95)}}
+.va-tarjeta{position:relative;z-index:1;width:min(460px,100%);text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;padding:30px 24px 26px;border-radius:28px;
+  background:linear-gradient(180deg,rgba(8,22,49,.92),rgba(8,26,57,.88));border:1px solid rgba(66,134,255,.3);box-shadow:0 26px 80px rgba(0,0,0,.5),0 0 50px rgba(36,200,255,.1);backdrop-filter:blur(8px)}
+.va-tarjeta h1{margin:0;font-size:clamp(26px,6vw,34px)}
+.va-sub{margin:0;color:#cfe0f5;line-height:1.55}
+.va-sub .cuenta{font-family:var(--f-titulo);font-size:20px;color:var(--cyan2)}
+.va-logo{position:relative;width:150px;height:150px;display:grid;place-items:center;margin-bottom:6px}
+.va-logo>img,.va-logo>.ini{position:relative;z-index:1;width:126px;height:126px;border-radius:50%;background:#fff;object-fit:contain;padding:6px;box-shadow:0 12px 40px rgba(0,0,0,.45);animation:pop .7s cubic-bezier(.2,1.4,.4,1) both}
+.va-logo>.ini{display:grid;place-items:center;font-family:var(--f-titulo);font-size:40px;font-weight:800;background:linear-gradient(135deg,#087bff,#24c8ff);color:#04152f}
+.va-logo .anillo{position:absolute;inset:0;border-radius:50%;border:2px solid transparent;border-top-color:var(--cyan);border-right-color:rgba(36,200,255,.3);animation:girar 3.5s linear infinite}
+.va-logo .anillo.b{inset:-10px;border-top-color:transparent;border-bottom-color:rgba(8,123,255,.8);animation-duration:6s;animation-direction:reverse}
+.va-google{min-height:44px;display:flex;justify-content:center}
+.va-mascota{position:relative;z-index:1;height:170px;width:auto;filter:drop-shadow(0 16px 26px rgba(0,0,0,.5))}
+.va-pie{position:relative;z-index:1;display:flex;align-items:center;gap:10px;color:var(--mut);font-size:12.5px}
+.va-pie img{height:30px;width:auto}
+.vitrina-acceso .aviso-legal{position:relative;z-index:1;max-width:460px;margin:0}
+.va-cargando{position:absolute;inset:0;border-radius:inherit;background:rgba(6,21,47,.92);display:grid;place-items:center}
+@media (min-width:900px){.va-mascota{position:absolute;left:calc(50% + 250px);bottom:18%;height:230px}}
+
+/* Vitrina (dentro de la app) */
+.vitrina-hero{position:relative;display:flex;align-items:center;gap:22px;flex-wrap:wrap;padding:22px;margin-bottom:16px;border-radius:26px;overflow:hidden;
+  background:radial-gradient(120% 140% at 0% 0%,rgba(36,200,255,.22),transparent 55%),linear-gradient(135deg,#0b2a5c,#081b3d);border:1px solid rgba(36,200,255,.35)}
+.vitrina-hero::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:28px 28px;pointer-events:none}
+.vitrina-hero .logo-t{position:relative;animation:halo 3.2s ease-in-out infinite,pop .7s cubic-bezier(.2,1.4,.4,1) both}
+.vh-texto{position:relative;flex:1;min-width:200px}
+.vh-texto h1{margin:4px 0 6px;font-size:clamp(26px,4vw,38px)}
+.vh-texto p{margin:0 0 12px;color:#cfe0f5}
+.vh-datos{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.vh-datos b{font-family:var(--f-titulo);font-size:22px;color:var(--cyan2)}
+.vh-mascota{position:relative;height:140px;width:auto;filter:drop-shadow(0 14px 22px rgba(0,0,0,.45))}
+@media (max-width:640px){.vitrina-hero{padding:18px;gap:14px}.vitrina-hero .logo-t.xl{width:84px;height:84px}.vh-mascota{position:absolute;right:-6px;top:10px;height:84px;opacity:.95}.vh-texto{min-width:0}.vh-texto h1,.vh-texto p,.vh-texto .ceja{padding-right:62px}}
+.vitrina-busca{display:flex;align-items:center;gap:8px;padding:6px 6px 6px 14px;border-radius:16px;background:rgba(8,30,66,.85);border:1px solid var(--line);transition:border-color .2s,box-shadow .2s}
+.vitrina-busca:focus-within{border-color:var(--cyan);box-shadow:0 0 0 4px rgba(36,200,255,.12)}
+.vitrina-busca .lupa{color:var(--mut)}
+.vitrina-busca input{flex:1;min-width:0;border:0;background:none;color:var(--ink);font:inherit;font-size:15px;padding:10px 4px;outline:none}
+.vitrina-busca select{flex:none;width:auto;max-width:44%;min-height:0;border:1px solid var(--line);background:#0b2450;color:var(--ink);border-radius:12px;padding:9px 10px;font:inherit;font-size:13px}
+.rejilla-prod{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-top:16px}
+@media (max-width:520px){.rejilla-prod{grid-template-columns:1fr 1fr;gap:10px}}
+.prod{position:relative;display:flex;flex-direction:column;border-radius:20px;overflow:hidden;text-decoration:none;color:inherit;background:linear-gradient(180deg,#0d2c5e,#0a2148);border:1px solid var(--line);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s,border-color .25s}
+.prod:hover{transform:translateY(-5px);border-color:rgba(36,200,255,.6);box-shadow:0 18px 40px rgba(0,0,0,.4),0 0 24px rgba(36,200,255,.15)}
+.prod::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.1) 50%,transparent 65%);transform:translateX(-120%);transition:transform .7s;pointer-events:none}
+.prod:hover::after{transform:translateX(120%)}
+.prod .foto{position:relative;aspect-ratio:1/1;background:radial-gradient(circle at 50% 40%,#123a78,#081b3d);display:grid;place-items:center;overflow:hidden}
+.prod .foto img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.prod:hover .foto img{transform:scale(1.06)}
+.prod .foto .arte{width:46%;height:46%;color:#6aa9ff;opacity:.85}
+.chip-cat{position:absolute;left:10px;top:10px;display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;background:rgba(4,15,37,.72);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(6px)}
+.chip-cat .i{width:13px;height:13px}
+.prod .cuerpo{display:flex;flex-direction:column;gap:4px;padding:12px 14px 14px;flex:1}
+.prod .t{font-family:var(--f-titulo);font-weight:700;font-size:15.5px;line-height:1.25}
+.prod .tags{font-size:12px;color:#cfe0f5;margin-top:2px}
+.precio-fila{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding-top:10px}
+.precio{font-family:var(--f-titulo);font-size:20px;font-weight:800;background:linear-gradient(90deg,#fff,var(--cyan2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.prod .ver{display:inline-flex;align-items:center;font-size:12.5px;font-weight:700;color:var(--cyan2);transition:gap .2s}
+.prod:hover .ver{gap:4px}
+@media (max-width:520px){.prod .t{font-size:13.5px}.precio{font-size:17px}.prod .tags{display:none}.prod .cuerpo{padding:10px}}
+.precio-cliente{display:flex;align-items:baseline;gap:10px;padding:16px 18px;border-radius:18px;background:linear-gradient(120deg,rgba(8,123,255,.25),rgba(36,200,255,.1));border:1px solid rgba(36,200,255,.4)}
+.precio-cliente span{color:var(--mut);font-size:13px}
+.precio-cliente b{font-family:var(--f-titulo);font-size:34px;font-weight:800;color:#fff}
+.btn.wa{background:linear-gradient(135deg,#1fb35a,#25d366);border-color:transparent;color:#03200f}
+.btn.wa:hover{box-shadow:0 10px 26px rgba(37,211,102,.35)}
+.btn.grande{min-height:54px;font-size:15.5px;width:100%;justify-content:center}
+
+/* Mascota con más vida */
+.m-flota{animation:flotar 4.5s ease-in-out infinite}
+.m-saluda{transform-origin:50% 90%;animation:saludar 2.6s ease-in-out infinite}
+@keyframes saludar{0%,60%,100%{transform:rotate(0) translateY(0)}10%{transform:rotate(-6deg) translateY(-6px)}20%{transform:rotate(5deg)}30%{transform:rotate(-4deg) translateY(-3px)}40%{transform:rotate(3deg)}}
+@keyframes pop{0%{opacity:0;transform:scale(.4)}70%{opacity:1;transform:scale(1.08)}100%{transform:scale(1)}}
+.mascota img{animation:pop .55s cubic-bezier(.2,1.4,.4,1) both,flotar 6s ease-in-out .55s infinite}
+.vacio .mascota img{width:130px}
+.toast img{animation:pop .5s cubic-bezier(.2,1.4,.4,1) both}
+.toast{animation:subir .35s cubic-bezier(.2,1.2,.4,1) both}
+.cargando .puntos{display:flex;gap:5px}
+.cargando .puntos b{width:7px;height:7px;border-radius:50%;background:var(--cyan);animation:punto 1s ease-in-out infinite}
+.cargando .puntos b:nth-child(2){animation-delay:.15s}.cargando .puntos b:nth-child(3){animation-delay:.3s}
+@keyframes punto{0%,80%,100%{transform:scale(.5);opacity:.4}40%{transform:scale(1);opacity:1}}
+.modelo{transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s,border-color .25s}
+.modelo:hover{transform:translateY(-4px)}
+.kpi{transition:transform .25s}.kpi:hover{transform:translateY(-3px)}
+.btn{transition:transform .15s,box-shadow .2s,background .2s,border-color .2s}
+.btn:active{transform:scale(.97)}
+
+/* Confeti de celebración */
+.confeti{position:fixed;inset:0;pointer-events:none;z-index:200;overflow:hidden}
+.confeti i{position:absolute;top:-14px;width:9px;height:14px;border-radius:2px;animation:caer 1.6s cubic-bezier(.25,.6,.4,1) forwards}
+@keyframes caer{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--dx),105vh) rotate(var(--giro));opacity:.9}}
+
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
   .entra{opacity:1}
