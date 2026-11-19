@@ -46,8 +46,11 @@
   K.arte = function (cat) { return '<svg class="arte" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" aria-hidden="true">' + IC[K.icCategoria(cat)] + '</svg>'; };
 
   /* ---------- Mascota contextual ---------- */
-  var POSES = { entusiasmo: 'img/m_pulgar.webp', inteligencia: 'img/m_tablet.webp', confianza: 'img/m_lentes.webp', pensamiento: 'img/m_think.webp',
-    trabajo: 'img/m_lap.webp', advertencia: 'img/m_alerta.webp', carino: 'img/m_heart.webp', exito: 'img/m_thumb.webp' };
+  var POSES = { entusiasmo: 'img/m_pulgar.webp', inteligencia: 'img/m_tablet.webp', confianza: 'img/m2_cool.webp', pensamiento: 'img/m2_duda.webp',
+    trabajo: 'img/m2_laptop.webp', advertencia: 'img/m2_sorpresa.webp', carino: 'img/m_heart.webp', exito: 'img/m2_fiesta.webp',
+    saludo: 'img/m2_saludo.webp', fiesta: 'img/m2_fiesta.webp', lupa: 'img/m2_lupa.webp', caja: 'img/m2_caja.webp', escudo: 'img/m2_escudo.webp',
+    dormido: 'img/m2_dormido.webp', confuso: 'img/m2_confuso.webp', risa: 'img/m2_risa.webp', fuerza: 'img/m2_fuerza.webp', selfie: 'img/m2_selfie.webp',
+    tablet: 'img/m2_sentado.webp', airpods: 'img/m2_airpods.webp', sorpresa: 'img/m2_sorpresa.webp', duda: 'img/m2_duda.webp', cool: 'img/m2_cool.webp' };
   K.pose = function (t) { return POSES[t] || POSES.confianza; };
   K.mascota = function (tipo, texto, clase) {
     return '<div class="mascota ' + (clase || '') + (tipo === 'advertencia' ? ' advertencia' : '') + '"><img src="' + K.pose(tipo) + '" alt="">' + (texto ? '<div class="globo">' + texto + '</div>' : '') + '</div>';
@@ -55,7 +58,44 @@
   K.vacio = function (tipo, titulo, texto, extra) {
     return '<div class="vacio entra">' + K.mascota(tipo, '', 'vertical') + '<h2>' + esc(titulo) + '</h2>' + (texto ? '<p class="mut" style="margin:0;max-width:420px">' + texto + '</p>' : '') + (extra || '') + '</div>';
   };
-  K.cargando = function (texto) { return '<div class="cargando"><img src="' + POSES.trabajo + '" alt=""><span>' + esc(texto || 'Cargando…') + '</span></div>'; };
+  K.cargando = function (texto) {
+    var p = ['trabajo', 'tablet', 'lupa'][Math.floor(Math.random() * 3)];
+    return '<div class="cargando"><img class="m-flota" src="' + K.pose(p) + '" alt=""><span>' + esc(texto || 'Cargando…') + '</span><i class="puntos"><b></b><b></b><b></b></i></div>';
+  };
+
+  /* ---------- Logos de tienda (se piden al servidor una vez y se recuerdan en el dispositivo) ---------- */
+  K.logos = {};
+  try { K.logos = JSON.parse(localStorage.getItem('kan_v7_logos') || '{}'); } catch (e) { K.logos = {}; }
+  var logosPend = {}, logosTimer = null;
+  function iniciales(n) { return esc(String(n || '?').split(/\s+/).map(function (w) { return w.charAt(0); }).join('').slice(0, 2).toUpperCase()); }
+  K.logoTienda = function (tiendaId, logoId, nombre, tam) {
+    var cls = 'logo-t ' + (tam || 'md');
+    if (!logoId) return '<span class="' + cls + ' ini" aria-hidden="true">' + iniciales(nombre) + '</span>';
+    if (K.logos[logoId]) return '<span class="' + cls + '"><img src="' + K.logos[logoId] + '" alt="Logo de ' + esc(nombre) + '"></span>';
+    logosPend[tiendaId] = logoId;
+    clearTimeout(logosTimer); logosTimer = setTimeout(cargarLogos, 30);
+    return '<span class="' + cls + ' cargando-logo" data-logo-t="' + esc(tiendaId) + '" data-logo-id="' + esc(logoId) + '"><img alt="Logo de ' + esc(nombre) + '"></span>';
+  };
+  function cargarLogos() {
+    var ids = Object.keys(logosPend); if (!ids.length || !S.perfil) return;
+    var mapa = logosPend; logosPend = {};
+    api.llamar('logos', { ids: ids }).then(function (r) {
+      ids.forEach(function (tid) {
+        if (!r[tid]) return;
+        K.logos[mapa[tid]] = r[tid];
+        K.$$('[data-logo-id="' + mapa[tid] + '"]').forEach(function (el) { el.querySelector('img').src = r[tid]; el.classList.remove('cargando-logo'); });
+      });
+      try { localStorage.setItem('kan_v7_logos', JSON.stringify(K.logos)); } catch (e) { }
+    }).catch(function () { });
+  }
+  K.bannerTienda = function (t, sub, extra) {
+    return '<div class="banner-tienda entra">' + K.logoTienda(t.id, t.logo, t.nombre, 'lg') +
+      '<div class="bt-texto"><div class="ceja">' + esc(sub || 'Tienda en KAN Distribuidora') + '</div><h2>' + esc(t.nombre) + '</h2></div>' + (extra || '') + '</div>';
+  };
+  K.avisoDistribuidora = function (tienda) {
+    return '<p class="aviso-legal">' + ic('escudo') + '<span><b>KAN Distribuidora</b> es la plataforma que conecta tiendas, vendedores y clientes. ' +
+      (tienda ? 'Los equipos pertenecen a <b>' + esc(tienda) + '</b>' : 'Los equipos pertenecen a cada tienda') + '; KAN no es propietaria de las tiendas ni de los equipos.</span></p>';
+  };
 
   /* ---------- Sonidos opcionales (desactivados por defecto) ---------- */
   var sonidoOn = false;
@@ -166,27 +206,29 @@
   K.ir = function (ruta) { if (location.hash === '#' + ruta) K.mostrar(); else location.hash = ruta; };
   function menu() {
     var r = K.rol(), m = [];
+    if (r === 'CLIENTE') return [['tienda', 'catalogo', 'Equipos', 'Vitrina'], ['perfil', 'usuario', 'Mi cuenta', 'Cuenta']];
     if (r === 'ADMIN') m.push(['admin', 'inicio', 'Panel', 'General']);
     if (K.puede('catalogo.ver')) m.push(['catalogo', 'catalogo', 'Catálogo', 'Comercial']);
     if (K.puede('inventario.ver')) m.push(['inventario', 'caja', 'Inventario', r === 'ADMIN' ? null : 'Mi tienda']);
     if (K.puede('inventario.crear')) m.push(['registro', 'mas', 'Registrar', null]);
+    if (r === 'PROVEEDOR' || r === 'ADMIN') m.push(['tienda', 'ojo', 'Vitrina', null]);
     if (K.puede('oportunidades')) m.push(['oportunidades', 'calc', 'Oportunidades', null]);
     if (r === 'PROVEEDOR' && (S.perfil.tiendas || []).some(function (t) { return t.gestionaVendedores; })) m.push(['vendedores', 'usuario', 'Vendedores', null]);
     m.push(['notificaciones', 'campana', 'Avisos', 'Cuenta']);
     m.push(['perfil', 'usuario', 'Perfil', null]);
     return m;
   }
-  K.inicioRol = function () { var r = K.rol(); return r === 'ADMIN' ? 'admin' : r === 'PROVEEDOR' ? 'inventario' : 'catalogo'; };
+  K.inicioRol = function () { var r = K.rol(); return r === 'ADMIN' ? 'admin' : r === 'PROVEEDOR' ? 'inventario' : r === 'CLIENTE' ? 'tienda' : 'catalogo'; };
 
   function pintarEstructura() {
     var m = menu();
     var movil = m.filter(function (x) { return x[0] !== 'perfil' || K.rol() !== 'ADMIN'; }).slice(0, 5);
     document.getElementById('raiz').innerHTML =
       '<div class="app">' +
-      '<header class="barra-sup"><button class="marca" data-act="ir" data-ruta="' + K.inicioRol() + '" aria-label="Inicio de KAN"><img src="img/mark_dark.png" alt=""><b>KAN</b><small>V7</small></button>' +
-      '<form class="buscador-sup" data-form="buscar-sup" role="search"><label class="sr" for="q-sup">Buscar equipos</label><input id="q-sup" type="search" placeholder="Busca: iPhone 13 128 GB batería mayor a 85%" autocomplete="off"></form>' +
+      '<header class="barra-sup"><button class="marca" data-act="ir" data-ruta="' + K.inicioRol() + '" aria-label="Inicio de KAN Distribuidora"><img src="img/mark_dark.png" alt=""><span class="marca-txt"><b>KAN</b><small>Distribuidora</small></span></button>' +
+      '<form class="buscador-sup" data-form="buscar-sup" role="search"><label class="sr" for="q-sup">Buscar equipos</label><input id="q-sup" type="search" placeholder="' + (K.rol() === 'CLIENTE' ? 'Busca: iPhone 13 128 GB, laptop, AirPods…' : 'Busca: iPhone 13 128 GB batería mayor a 85%') + '" autocomplete="off"></form>' +
       '<div class="acciones"><span class="estado-red solo-escritorio" id="estado-red"><i></i><span>Conectado</span></span>' +
-      '<a class="btn-icono" href="#/notificaciones" aria-label="Avisos">' + ic('campana') + '<span class="punto oculto" id="badge-sup"></span></a>' +
+      (K.rol() === 'CLIENTE' ? '' : '<a class="btn-icono" href="#/notificaciones" aria-label="Avisos">' + ic('campana') + '<span class="punto oculto" id="badge-sup"></span></a>') +
       '<a class="btn-icono" href="#/perfil" aria-label="Perfil" title="' + esc(S.perfil.nombre) + '">' + ic('usuario') + '</a></div></header>' +
       (api.modoPrueba ? '<div class="banda-prueba"><b>Modo de prueba.</b> Datos ficticios guardados solo en este navegador. Para usar datos reales, conecta el servidor (ver LEEME).</div>' : '') +
       '<div class="aviso-red oculto" id="aviso-red">Sin conexión. Mostrando la última información recibida; reintentaremos en automático.</div>' +
@@ -221,8 +263,9 @@
     if (!S.perfil) { K.vistas.acceso(); return; }
     var nombre = partes[0] || K.inicioRol();
     if (!K.vistas[nombre] || nombre === 'acceso') nombre = K.inicioRol();
+    if (K.rol() === 'CLIENTE' && ['tienda', 'equipo', 'perfil'].indexOf(nombre) < 0) nombre = 'tienda';
     if (!document.getElementById('vista')) pintarEstructura();
-    K.$$('[data-nav]').forEach(function (a) { a.classList.toggle('on', a.dataset.nav === nombre || (nombre === 'grupo' || nombre === 'unidad') && a.dataset.nav === (K.rol() === 'PROVEEDOR' ? 'inventario' : 'catalogo')); });
+    K.$$('[data-nav]').forEach(function (a) { a.classList.toggle('on', a.dataset.nav === nombre || (nombre === 'grupo' || nombre === 'unidad') && a.dataset.nav === (K.rol() === 'PROVEEDOR' ? 'inventario' : 'catalogo') || nombre === 'equipo' && a.dataset.nav === 'tienda'); });
     var v = document.getElementById('vista');
     if (vistaActual !== h) window.scrollTo(0, 0);
     vistaActual = h;
@@ -261,7 +304,7 @@
     e.preventDefault();
     if (f.dataset.form === 'buscar-sup') {
       var q = f.querySelector('input').value.trim();
-      K.ir((K.puede('catalogo.ver') ? '/catalogo' : '/inventario') + '?q=' + encodeURIComponent(q));
+      K.ir((K.rol() === 'CLIENTE' ? '/tienda' : K.puede('catalogo.ver') ? '/catalogo' : '/inventario') + '?q=' + encodeURIComponent(q));
       return;
     }
     var h = (K.accionesVista && K.accionesVista['form:' + f.dataset.form]) || K.acciones['form:' + f.dataset.form];
@@ -300,7 +343,7 @@
       var cambio = S.rev && r.rev !== S.rev;
       S.rev = r.rev;
       if (r.noLeidas !== S.noLeidas) { S.noLeidas = r.noLeidas; actualizarBadge(); }
-      if (cambio && !K.sucio && !document.querySelector('.capa') && K.ruta && ['catalogo', 'inventario', 'grupo', 'unidad', 'admin', 'oportunidades', 'vendedores'].indexOf(K.ruta.nombre) >= 0) {
+      if (cambio && !K.sucio && !document.querySelector('.capa') && K.ruta && ['catalogo', 'inventario', 'grupo', 'unidad', 'admin', 'oportunidades', 'vendedores', 'tienda'].indexOf(K.ruta.nombre) >= 0) {
         K.refrescar ? K.refrescar() : K.mostrar();
       }
       /* Si el admin cambió tus tiendas o tu delegación, el menú se actualiza sin cerrar sesión. */
